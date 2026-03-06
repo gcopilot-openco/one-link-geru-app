@@ -1,32 +1,56 @@
 # 🔗 OneLink Server
 
-Servidor de redirecionamento inteligente para deep links mobile. Detecta automaticamente o dispositivo do usuário e redireciona para o app instalado ou para as lojas (App Store/Play Store).
+Servidor de redirecionamento inteligente para deep links mobile da **Geru**. Detecta automaticamente o dispositivo do usuário e redireciona para o app instalado, para as lojas (App Store / Play Store) ou para a versão web. Os links são gerenciados via **Firebase Firestore** e o servidor é hospedado no **Google Cloud Run**.
 
 ## 🚀 Funcionalidades
 
-- ✅ Detecção automática de dispositivo (Mobile/Desktop)
-- ✅ Identificação de plataforma (iOS/Android)
-- ✅ Tentativa de abertura do app instalado
+- ✅ Detecção automática de dispositivo (Mobile / Desktop)
+- ✅ Identificação de plataforma (iOS / Android)
+- ✅ Tentativa de abertura do app instalado via deep link
 - ✅ Fallback automático para App Store ou Play Store
 - ✅ Redirecionamento para web em desktop
+- ✅ Links gerenciados no Firebase Firestore (sem deploy para atualizar)
+- ✅ Autenticação via Application Default Credentials (ADC) — sem chave privada
 - ✅ Templates dinâmicos com Handlebars
 - ✅ TypeScript para type safety
 - ✅ Hot reload em desenvolvimento
 
 ## 📋 Pré-requisitos
 
-- Node.js 18+ 
-- npm ou yarn
+- Node.js 22+
+- npm
+- [Google Cloud SDK](https://cloud.google.com/sdk/docs/install) (`gcloud`)
+- Acesso ao projeto GCP `geru-app-dev`
 
 ## 🔧 Instalação
 
 ```bash
-# Clone o repositório
-git clone https://github.com/dennerrondinely/one-link.git
-cd onelink-server
-
-# Instale as dependências
+git clone https://github.com/dennerrondinely-open/one-link-geru-app.git
+cd one-link-geru-app
 npm install
+```
+
+### Variáveis de ambiente
+
+Copie o arquivo de exemplo e ajuste:
+
+```bash
+cp .env.example .env
+```
+
+O único campo obrigatório é:
+
+```env
+FIREBASE_PROJECT_ID=geru-app-dev
+```
+
+### Credenciais locais (ADC)
+
+O servidor usa Application Default Credentials para acessar o Firestore. Na primeira vez, autentique-se com:
+
+```bash
+gcloud auth application-default login
+gcloud config set project geru-app-dev
 ```
 
 ## 🏃 Como usar
@@ -46,35 +70,65 @@ npm run build
 npm start
 ```
 
-O servidor estará disponível em `http://localhost:3000`
+O servidor estará disponível em `http://localhost:3000`.
 
-## 📱 Testando
+## 📱 Rotas disponíveis
 
-### No Desktop
-Acesse `http://localhost:3000` para ver a página inicial com informações do seu dispositivo.
+| Rota | Descrição |
+|---|---|
+| `GET /` | Página inicial com informações do dispositivo |
+| `GET /:id` | Redireciona conforme o link configurado no Firestore |
 
-### No Mobile
-1. Descubra seu IP local: `ifconfig` ou `ip addr`
-2. Acesse do celular: `http://SEU-IP:3000`
-3. Teste os links:
-   - `/instagram-demo` - Tenta abrir Instagram
-   - `/whatsapp-demo` - Tenta abrir WhatsApp
-   - `/geru` - Tenta abrir app Geru
+### Links ativos
 
-## 🔗 Como funciona
+| ID | Tipo | Destino |
+|---|---|---|
+| `geru` | `app` | App Geru (iOS / Android / Web) |
+| `whatsapp` | `whatsapp` | Atendimento via WhatsApp |
+| `achadinhos` | `whatsapp-group` | Grupo Achadinhos Geru no WhatsApp |
 
-### 1. Usuário acessa o link
+## 🔗 Como funciona o redirecionamento
+
 ```
-http://localhost:3000/instagram-demo
+Usuário acessa /:id
+        ↓
+Firestore busca o documento links/{id}
+        ↓
+Detecta o dispositivo
+        ↓
+├── iOS     → tenta appUrl → fallback para appStore
+├── Android → tenta appUrl → fallback para playStore
+└── Desktop → redireciona direto para webUrl
 ```
 
-### 2. Servidor detecta o dispositivo
-- **Mobile iOS**: Tenta abrir `instagram://` → Fallback para App Store
-- **Mobile Android**: Tenta abrir Intent URL → Fallback para Play Store
-- **Desktop**: Redireciona direto para versão web
+Se o app não abrir em ~2 segundos, redireciona automaticamente para a loja.
 
-### 3. Timeout inteligente
-Se o app não abrir em 2 segundos, redireciona automaticamente para a loja.
+## 🗄️ Gerenciamento de Links (Firestore)
+
+Os links ficam na coleção `links` do Firestore. Cada documento tem a seguinte estrutura:
+
+```typescript
+{
+  name: string;          // Nome exibido
+  type: "app" | "whatsapp" | "whatsapp-group" | "social" | "web";
+  appUrl: string;        // Deep link para abrir o app
+  webUrl: string;        // URL fallback para desktop
+  appStore: string;      // Link da App Store (iOS)
+  playStore: string;     // Link da Play Store (Android)
+  phone?: string;        // Número WhatsApp (tipo whatsapp)
+  message?: string;      // Mensagem pré-preenchida (tipo whatsapp)
+  packageName?: string;  // Package Android (tipo app)
+  bundleId?: string;     // Bundle ID iOS (tipo app)
+}
+```
+
+### Popular o Firestore (primeira vez)
+
+```bash
+npx tsx src/scripts/seed.ts
+```
+
+> ⚠️ O script sobrescreve os documentos existentes. Edite `src/scripts/seed.ts` antes de rodar se quiser alterar os dados.
 
 ## 📁 Estrutura do projeto
 
@@ -82,121 +136,77 @@ Se o app não abrir em 2 segundos, redireciona automaticamente para a loja.
 onelink-server/
 ├── src/
 │   ├── controllers/
-│   │   ├── home.ts         # Controller da página inicial
-│   │   └── redirect.ts     # Controller de redirecionamento
+│   │   ├── home.ts          # Página inicial
+│   │   └── redirect.ts      # Lógica de redirecionamento
+│   ├── services/
+│   │   ├── firebase.ts      # Inicialização do Firebase Admin (ADC)
+│   │   └── links.ts         # Queries no Firestore
+│   ├── scripts/
+│   │   └── seed.ts          # Script para popular o Firestore
 │   ├── types/
-│   │   ├── index.ts        # Interfaces TypeScript
-│   │   └── express.d.ts    # Extensões do Express
+│   │   ├── index.ts         # Interfaces TypeScript
+│   │   └── express.d.ts     # Extensões do Express
 │   ├── views/
 │   │   ├── layouts/
-│   │   │   ├── main.handlebars
-│   │   │   └── download.handlebars
+│   │   │   ├── main.handlebars      # Layout principal
+│   │   │   └── download.handlebars  # Layout de redirecionamento
 │   │   ├── home.handlebars
 │   │   ├── redirect.handlebars
 │   │   └── 404.handlebars
-│   ├── constants.ts        # Configuração de links
-│   ├── routes.ts           # Definição de rotas
-│   └── index.ts            # Entry point
-├── dist/                   # Código compilado
-├── tsconfig.json           # Config TypeScript
+│   ├── assets/
+│   │   └── geru-logo.svg
+│   ├── routes.ts            # Definição de rotas
+│   └── index.ts             # Entry point
+├── Dockerfile               # Build multi-stage para Cloud Run
+├── cloudbuild.yaml          # Pipeline CI/CD no Cloud Build
+├── service.yaml             # Configuração do Cloud Run
+├── .env.example
+├── tsconfig.json
 └── package.json
 ```
 
-## ⚙️ Configuração de Links
+## 🛠️ Stack
 
-Edite `src/constants.ts` para adicionar novos links:
+| Camada | Tecnologia |
+|---|---|
+| Runtime | Node.js 22 |
+| Linguagem | TypeScript |
+| Framework | Express 5 |
+| Templates | Handlebars |
+| Detecção de UA | express-useragent |
+| Banco de dados | Firebase Firestore |
+| Auth | Application Default Credentials (ADC) |
+| Hospedagem | Google Cloud Run |
+| CI/CD | Google Cloud Build |
 
-```typescript
-const links: Links = {
-  "seu-link": {
-    appUrl: "seuapp://path",
-    webUrl: "https://seu-site.com",
-    name: "Seu App",
-    appStore: "https://apps.apple.com/app/id123456",
-    playStore: "https://play.google.com/store/apps/details?id=com.seu.app",
-  },
-};
-```
+## 🚀 Deploy (Cloud Run)
 
-## 🎨 Personalizando Templates
+O deploy é feito automaticamente via **Cloud Build** a cada push na branch `main`.
 
-Os templates Handlebars estão em `src/views/`:
+### Pipeline (`cloudbuild.yaml`)
 
-- `home.handlebars` - Página inicial
-- `redirect.handlebars` - Página de redirecionamento
-- `layouts/download.handlebars` - Layout para mobile
+1. Build da imagem Docker
+2. Push para o Artifact Registry (`us-central1-docker.pkg.dev/geru-app-dev/onelink`)
+3. Deploy no Cloud Run com `FIREBASE_PROJECT_ID` injetado via variável de ambiente
 
-## 🛠️ Stack Tecnológico
+### Deploy manual
 
-- **Node.js** - Runtime JavaScript
-- **TypeScript** - Type safety
-- **Express** - Framework web
-- **Handlebars** - Template engine
-- **express-useragent** - Detecção de dispositivos
-- **tsx** - TypeScript executor com hot reload
-
-## 📊 Logs
-
-O servidor registra todos os acessos no console:
-
-```
-[2026-01-16T10:30:45.123Z] instagram-demo - Mobile - iOS
-[2026-01-16T10:31:20.456Z] whatsapp-demo - Desktop - MacOS
-```
-
-## 🚀 Deploy
-
-### Vercel
 ```bash
-# Instale Vercel CLI
-npm i -g vercel
-
-# Deploy
-vercel
+gcloud builds submit --config cloudbuild.yaml
 ```
 
-### Railway
-1. Conecte seu repositório GitHub
-2. Configure o build command: `npm run build`
-3. Configure o start command: `npm start`
+## 🔒 Segurança
 
-### Render
-1. Crie um novo Web Service
-2. Build Command: `npm install && npm run build`
-3. Start Command: `npm start`
+- O servidor usa **firebase-admin** com ADC — nenhuma chave privada é armazenada no código ou no repositório.
+- Em produção (Cloud Run), as credenciais são fornecidas automaticamente pela Service Account atribuída ao serviço via IAM.
+- As Firestore Security Rules bloqueiam acesso direto à coleção `links` por client SDKs:
 
-## 🔒 Variáveis de Ambiente
-
-Crie um arquivo `.env` (opcional):
-
-```env
-PORT=3000
-NODE_ENV=production
+```js
+match /links/{docId} {
+  allow read, write: if false;
+}
 ```
-
-## 🤝 Contribuindo
-
-1. Fork o projeto
-2. Crie uma branch: `git checkout -b feature/nova-funcionalidade`
-3. Commit suas mudanças: `git commit -m 'Adiciona nova funcionalidade'`
-4. Push para a branch: `git push origin feature/nova-funcionalidade`
-5. Abra um Pull Request
-
-## 📝 Licença
-
-ISC
 
 ## 👤 Autor
 
-**Denner Rondinely**
-- GitHub: [@dennerrondinely](https://github.com/dennerrondinely)
-
-## 🙏 Agradecimentos
-
-- [Express](https://expressjs.com/)
-- [Handlebars](https://handlebarsjs.com/)
-- [TypeScript](https://www.typescriptlang.org/)
-
----
-
-⭐ Se este projeto foi útil, considere dar uma estrela no GitHub!
+**Denner Rondinely** — [@dennerrondinely](https://github.com/dennerrondinely-open)

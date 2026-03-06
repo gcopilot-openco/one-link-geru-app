@@ -6,6 +6,7 @@ import * as useragent from "express-useragent";
 import { engine } from "express-handlebars";
 import path from "path";
 import routes from "./routes";
+import { initFirebase } from "./services/firebase";
 
 const app = express();
 
@@ -26,6 +27,9 @@ app.use("/assets", express.static(path.resolve(__dirname, "./assets")));
 
 // Cloud Run injeta PORT=8080; localmente usa 3000
 const port = process.env.PORT ? parseInt(process.env.PORT) : 3000;
+
+// Inicializa o Firebase
+initFirebase();
 
 app.use(routes);
 

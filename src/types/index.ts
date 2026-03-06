@@ -1,4 +1,4 @@
-export type LinkType = "app" | "whatsapp" | "social" | "web";
+export type LinkType = "app" | "whatsapp" | "whatsapp-group" | "social" | "web";
 
 export interface Link {
   name: string;
