@@ -1,0 +1,26 @@
+<div class="spinner-wrap">
+  <div class="spinner"></div>
+</div>
+<h1>Abrindo {{linkName}}...</h1>
+<p id="message">Tentando abrir o aplicativo...</p>
+
+<script>
+  const appUrl = '{{{appUrl}}}';
+  const timeout = 2000;
+  const start = Date.now();
+
+  window.location = appUrl;
+
+  const fallbackTimer = setTimeout(function () {
+    if (Date.now() - start < timeout + 100) {
+      document.getElementById('message').textContent = 'Redirecionando para a loja...';
+      window.location = '{{{store}}}';
+    }
+  }, timeout);
+
+  document.addEventListener('visibilitychange', function () {
+    if (document.hidden) clearTimeout(fallbackTimer);
+  });
+
+  window.addEventListener('blur', function () { clearTimeout(fallbackTimer); });
+</script>
