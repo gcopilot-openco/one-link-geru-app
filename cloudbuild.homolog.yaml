@@ -1,6 +1,6 @@
-# Pipeline de deploy — PRODUÇÃO
-# Trigger: push na branch `main`
-# Projeto GCP: geru-app-prod
+# Pipeline de deploy — HOMOLOGAÇÃO
+# Trigger: push na branch `develop`
+# Projeto GCP: geru-app-homolog
 
 steps:
   # 1. Build da imagem Docker
@@ -32,11 +32,11 @@ steps:
       - --platform=managed
       - --allow-unauthenticated
       - --port=8080
-      - --set-env-vars=NODE_ENV=production,FIREBASE_PROJECT_ID=${PROJECT_ID}
+      - --set-env-vars=NODE_ENV=homolog,FIREBASE_PROJECT_ID=${PROJECT_ID}
 
 substitutions:
   _REGION: us-central1
-  _SERVICE_NAME: onelink-server
+  _SERVICE_NAME: onelink-server-homolog
   _REPOSITORY: onelink
 
 images:
