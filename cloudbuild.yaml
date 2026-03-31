@@ -28,6 +28,14 @@ steps:
       - --platform=managed
       - --allow-unauthenticated
       - --port=8080
+      - --ingress=all
+      - --cpu=1
+      - --memory=512Mi
+      - --concurrency=80
+      - --timeout=30s
+      - --min-instances=0
+      - --max-instances=10
+      - --cpu-throttling
       - --set-env-vars=NODE_ENV=production,FIREBASE_PROJECT_ID=${PROJECT_ID}
 
 substitutions:
