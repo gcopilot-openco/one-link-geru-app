@@ -1,0 +1,171 @@
+[debug] [2026-03-31T18:33:39.951Z] ----------------------------------------------------------------------
+[debug] [2026-03-31T18:33:39.954Z] Command:       /home/odr100734/.nvm/versions/node/v24.11.1/bin/node /home/odr100734/.nvm/versions/node/v24.11.1/bin/firebase deploy --only hosting:one-link-app --debug
+[debug] [2026-03-31T18:33:39.955Z] CLI Version:   15.9.0
+[debug] [2026-03-31T18:33:39.955Z] Platform:      linux
+[debug] [2026-03-31T18:33:39.955Z] Node Version:  v24.11.1
+[debug] [2026-03-31T18:33:39.955Z] Time:          Tue Mar 31 2026 15:33:39 GMT-0300 (Brasilia Standard Time)
+[debug] [2026-03-31T18:33:39.956Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-03-31T18:33:41.280Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-03-31T18:33:41.282Z] > authorizing via signed-in user (denner.rondinely@open-co.com)
+[debug] [2026-03-31T18:33:41.282Z] [iam] checking project geru-app-dev for permissions ["firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2026-03-31T18:33:41.284Z] Checked if tokens are valid: true, expires at: 1774985535354
+[debug] [2026-03-31T18:33:41.284Z] Checked if tokens are valid: true, expires at: 1774985535354
+[debug] [2026-03-31T18:33:41.285Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/geru-app-dev:testIamPermissions [none]
+[debug] [2026-03-31T18:33:41.286Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/geru-app-dev:testIamPermissions  x-goog-user-project=geru-app-dev
+[debug] [2026-03-31T18:33:41.286Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/geru-app-dev:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2026-03-31T18:33:42.343Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/geru-app-dev:testIamPermissions 403
+[debug] [2026-03-31T18:33:42.343Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/geru-app-dev:testIamPermissions {"error":{"code":403,"message":"Caller does not have required permission to use project geru-app-dev. Grant the caller the roles/serviceusage.serviceUsageConsumer role, or a custom role with the serviceusage.services.use permission, by visiting https://console.developers.google.com/iam-admin/iam?project=geru-app-dev and then retry. Propagation of the new permission may take a few minutes.","status":"PERMISSION_DENIED","details":[{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":"USER_PROJECT_DENIED","domain":"googleapis.com","metadata":{"containerInfo":"geru-app-dev","service":"cloudresourcemanager.googleapis.com","consumer":"projects/geru-app-dev","consoleUrl":"https://console.developers.google.com/iam-admin/iam?project=geru-app-dev"}},{"@type":"type.googleapis.com/google.rpc.LocalizedMessage","locale":"en-US","message":"Caller does not have required permission to use project geru-app-dev. Grant the caller the roles/serviceusage.serviceUsageConsumer role, or a custom role with the serviceusage.services.use permission, by visiting https://console.developers.google.com/iam-admin/iam?project=geru-app-dev and then retry. Propagation of the new permission may take a few minutes."},{"@type":"type.googleapis.com/google.rpc.Help","links":[{"description":"Google developer console IAM admin","url":"https://console.developers.google.com/iam-admin/iam?project=geru-app-dev"}]}]}}
+[debug] [2026-03-31T18:33:42.344Z] [iam] error while checking permissions, command may fail: Request to https://cloudresourcemanager.googleapis.com/v1/projects/geru-app-dev:testIamPermissions had HTTP Error: 403, Caller does not have required permission to use project geru-app-dev. Grant the caller the roles/serviceusage.serviceUsageConsumer role, or a custom role with the serviceusage.services.use permission, by visiting https://console.developers.google.com/iam-admin/iam?project=geru-app-dev and then retry. Propagation of the new permission may take a few minutes.
+[debug] [2026-03-31T18:33:42.345Z] Checked if tokens are valid: true, expires at: 1774985535354
+[debug] [2026-03-31T18:33:42.345Z] Checked if tokens are valid: true, expires at: 1774985535354
+[debug] [2026-03-31T18:33:42.345Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/geru-app-dev [none]
+[debug] [2026-03-31T18:33:42.801Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/geru-app-dev 200
+[debug] [2026-03-31T18:33:42.801Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/geru-app-dev {"projectId":"geru-app-dev","projectNumber":"860817669272","displayName":"geru-homolog","name":"projects/geru-app-dev","resources":{"hostingSite":"geru-app-dev"},"state":"ACTIVE","etag":"1_7e3fd323-f663-49ac-9f2a-03bb5a334e5d"}
+[debug] [2026-03-31T18:33:44.114Z] defaultcredentials: writing to file /home/odr100734/.config/firebase/denner_rondinely_open-co.com_application_default_credentials.json
+[info] 
+   Thank you for trying our early preview of Next.js support on Firebase Hosting.
+   During the preview, support is best-effort and breaking changes can be expected. Proceed with caution.
+   The integration is known to work with Next.js version 12 - 15.0. You may encounter errors.
+
+   Documentation: https://firebase.google.com/docs/hosting/frameworks/nextjs
+   File a bug: https://github.com/firebase/firebase-tools/issues/new?template=bug_report.md
+   Submit a feature request: https://github.com/firebase/firebase-tools/issues/new?template=feature_request.md
+
+   We'd love to learn from you. Express your interest in helping us shape the future of Firebase Hosting: https://goo.gle/41enW5X
+
+[debug] [2026-03-31T18:33:47.248Z] Checked if tokens are valid: true, expires at: 1774985535354
+[debug] [2026-03-31T18:33:47.248Z] Checked if tokens are valid: true, expires at: 1774985535354
+[debug] [2026-03-31T18:33:47.248Z] >>> [apiv2][query] GET https://firebasehosting.googleapis.com/v1beta1/projects/geru-app-dev/sites/geru-app-dev [none]
+[debug] [2026-03-31T18:33:48.395Z] <<< [apiv2][status] GET https://firebasehosting.googleapis.com/v1beta1/projects/geru-app-dev/sites/geru-app-dev 200
+[debug] [2026-03-31T18:33:48.395Z] <<< [apiv2][body] GET https://firebasehosting.googleapis.com/v1beta1/projects/geru-app-dev/sites/geru-app-dev {"name":"projects/geru-app-dev/sites/geru-app-dev","defaultUrl":"https://geru-app-dev.web.app","type":"DEFAULT_SITE"}
+[info]    ▲ Next.js 15.5.14
+
+[info] 
+
+[info]    Creating an optimized production build ...
+
+[info]  ✓ Compiled successfully in 1961ms
+
+[info]    Linting and checking validity of types ...
+
+[info]    Collecting page data ...
+
+[info]    Generating static pages (0/4) ...
+
+[info]    Generating static pages (1/4) 
+
+[info]    Generating static pages (2/4) 
+   Generating static pages (3/4) 
+ ✓ Generating static pages (4/4)
+
+[info]    Finalizing page optimization ...
+
+[info]    Collecting build traces ...
+
+[info] 
+
+[info] Route (app)                                 Size  First Load JS
+┌ ƒ /                                      131 B         102 kB
+├ ○ /_not-found                            131 B         102 kB
+└ ƒ /[id]                                  638 B         103 kB
++ First Load JS shared by all             102 kB
+  ├ chunks/255-38b49df12a94ee57.js         46 kB
+  ├ chunks/4bd1b696-c023c6e3521b1417.js  54.2 kB
+  └ other shared chunks (total)           1.9 kB
+
+
+[info] 
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
+
+[info] Building a Cloud Function to run this application. This is needed due to:
+[info]  • non-static component /page
+[info]  • non-static component /[id]/page
+[info] 
+[debug] [2026-03-31T18:34:27.943Z] Checked if tokens are valid: true, expires at: 1774985535354
+[debug] [2026-03-31T18:34:27.943Z] Checked if tokens are valid: true, expires at: 1774985535354
+[debug] [2026-03-31T18:34:27.943Z] >>> [apiv2][query] GET https://firebasehosting.googleapis.com/v1beta1/projects/geru-app-dev/sites/geru-app-dev [none]
+[debug] [2026-03-31T18:34:29.203Z] <<< [apiv2][status] GET https://firebasehosting.googleapis.com/v1beta1/projects/geru-app-dev/sites/geru-app-dev 200
+[debug] [2026-03-31T18:34:29.203Z] <<< [apiv2][body] GET https://firebasehosting.googleapis.com/v1beta1/projects/geru-app-dev/sites/geru-app-dev {"name":"projects/geru-app-dev/sites/geru-app-dev","defaultUrl":"https://geru-app-dev.web.app","type":"DEFAULT_SITE"}
+[debug] [2026-03-31T18:34:32.499Z] [web frameworks] effective firebase.json:  {
+  "hosting": [
+    {
+      "site": "one-link-app",
+      "source": ".",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ],
+      "frameworksBackend": {
+        "region": "us-central1"
+      },
+      "rewrites": [
+        {
+          "source": "/**",
+          "function": {
+            "functionId": "ssronelinkapp",
+            "region": "us-central1",
+            "pinTag": true
+          }
+        }
+      ],
+      "redirects": [],
+      "headers": [
+        {
+          "source": "/_not-found",
+          "headers": [
+            {
+              "key": "x-nextjs-stale-time",
+              "value": "300"
+            },
+            {
+              "key": "x-nextjs-prerender",
+              "value": "1"
+            },
+            {
+              "key": "x-next-cache-tags",
+              "value": "_N_T_/layout,_N_T_/_not-found/layout,_N_T_/_not-found/page,_N_T_/_not-found"
+            }
+          ]
+        }
+      ],
+      "cleanUrls": true,
+      "trailingSlash": false,
+      "public": ".firebase/one-link-app/hosting",
+      "webFramework": "next_ssr"
+    }
+  ],
+  "functions": [
+    {
+      "source": ".firebase/one-link-app/functions",
+      "codebase": "firebase-frameworks-one-link-app"
+    }
+  ]
+}
+[debug] [2026-03-31T18:34:32.499Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-03-31T18:34:32.499Z] > authorizing via signed-in user (denner.rondinely@open-co.com)
+[debug] [2026-03-31T18:34:32.500Z] [iam] checking project geru-app-dev for permissions ["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]
+[debug] [2026-03-31T18:34:32.500Z] Checked if tokens are valid: true, expires at: 1774985535354
+[debug] [2026-03-31T18:34:32.500Z] Checked if tokens are valid: true, expires at: 1774985535354
+[debug] [2026-03-31T18:34:32.500Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/geru-app-dev:testIamPermissions [none]
+[debug] [2026-03-31T18:34:32.501Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/geru-app-dev:testIamPermissions  x-goog-user-project=geru-app-dev
+[debug] [2026-03-31T18:34:32.501Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/geru-app-dev:testIamPermissions {"permissions":["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]}
+[debug] [2026-03-31T18:34:33.555Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/geru-app-dev:testIamPermissions 403
+[debug] [2026-03-31T18:34:33.556Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/geru-app-dev:testIamPermissions {"error":{"code":403,"message":"Caller does not have required permission to use project geru-app-dev. Grant the caller the roles/serviceusage.serviceUsageConsumer role, or a custom role with the serviceusage.services.use permission, by visiting https://console.developers.google.com/iam-admin/iam?project=geru-app-dev and then retry. Propagation of the new permission may take a few minutes.","status":"PERMISSION_DENIED","details":[{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":"USER_PROJECT_DENIED","domain":"googleapis.com","metadata":{"containerInfo":"geru-app-dev","consoleUrl":"https://console.developers.google.com/iam-admin/iam?project=geru-app-dev","service":"cloudresourcemanager.googleapis.com","consumer":"projects/geru-app-dev"}},{"@type":"type.googleapis.com/google.rpc.LocalizedMessage","locale":"en-US","message":"Caller does not have required permission to use project geru-app-dev. Grant the caller the roles/serviceusage.serviceUsageConsumer role, or a custom role with the serviceusage.services.use permission, by visiting https://console.developers.google.com/iam-admin/iam?project=geru-app-dev and then retry. Propagation of the new permission may take a few minutes."},{"@type":"type.googleapis.com/google.rpc.Help","links":[{"description":"Google developer console IAM admin","url":"https://console.developers.google.com/iam-admin/iam?project=geru-app-dev"}]}]}}
+[debug] [2026-03-31T18:34:33.556Z] [iam] error while checking permissions, command may fail: Request to https://cloudresourcemanager.googleapis.com/v1/projects/geru-app-dev:testIamPermissions had HTTP Error: 403, Caller does not have required permission to use project geru-app-dev. Grant the caller the roles/serviceusage.serviceUsageConsumer role, or a custom role with the serviceusage.services.use permission, by visiting https://console.developers.google.com/iam-admin/iam?project=geru-app-dev and then retry. Propagation of the new permission may take a few minutes.
+[debug] [2026-03-31T18:34:33.557Z] Checked if tokens are valid: true, expires at: 1774985535354
+[debug] [2026-03-31T18:34:33.557Z] Checked if tokens are valid: true, expires at: 1774985535354
+[debug] [2026-03-31T18:34:33.557Z] >>> [apiv2][query] GET https://cloudfunctions.googleapis.com/v1/projects/geru-app-dev/locations/-/functions [none]
+[debug] [2026-03-31T18:34:34.128Z] <<< [apiv2][status] GET https://cloudfunctions.googleapis.com/v1/projects/geru-app-dev/locations/-/functions 403
+[debug] [2026-03-31T18:34:34.128Z] <<< [apiv2][body] GET https://cloudfunctions.googleapis.com/v1/projects/geru-app-dev/locations/-/functions {"error":{"code":403,"message":"Cloud Functions API has not been used in project geru-app-dev before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/cloudfunctions.googleapis.com/overview?project=geru-app-dev then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","status":"PERMISSION_DENIED","details":[{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":"SERVICE_DISABLED","domain":"googleapis.com","metadata":{"serviceTitle":"Cloud Functions API","service":"cloudfunctions.googleapis.com","activationUrl":"https://console.developers.google.com/apis/api/cloudfunctions.googleapis.com/overview?project=geru-app-dev","consumer":"projects/geru-app-dev","containerInfo":"geru-app-dev"}},{"@type":"type.googleapis.com/google.rpc.LocalizedMessage","locale":"en-US","message":"Cloud Functions API has not been used in project geru-app-dev before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/cloudfunctions.googleapis.com/overview?project=geru-app-dev then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry."},{"@type":"type.googleapis.com/google.rpc.Help","links":[{"description":"Google developers console API activation","url":"https://console.developers.google.com/apis/api/cloudfunctions.googleapis.com/overview?project=geru-app-dev"}]}]}}
+[debug] [2026-03-31T18:34:34.129Z] [functions] failed to list functions for geru-app-dev
+[debug] [2026-03-31T18:34:34.129Z] [functions] Request to https://cloudfunctions.googleapis.com/v1/projects/geru-app-dev/locations/-/functions had HTTP Error: 403, Cloud Functions API has not been used in project geru-app-dev before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/cloudfunctions.googleapis.com/overview?project=geru-app-dev then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.
+[debug] [2026-03-31T18:34:34.302Z] FirebaseError: Request to https://cloudfunctions.googleapis.com/v1/projects/geru-app-dev/locations/-/functions had HTTP Error: 403, Cloud Functions API has not been used in project geru-app-dev before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/cloudfunctions.googleapis.com/overview?project=geru-app-dev then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.
+    at responseToError (/home/odr100734/.nvm/versions/node/v24.11.1/lib/node_modules/firebase-tools/lib/responseToError.js:53:12)
+    at RetryOperation._fn (/home/odr100734/.nvm/versions/node/v24.11.1/lib/node_modules/firebase-tools/lib/apiv2.js:333:77)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+[error] 
+[error] Error: Failed to list functions for geru-app-dev

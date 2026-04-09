@@ -3,11 +3,12 @@ FROM node:22-alpine AS builder
 
 WORKDIR /app
 
+ENV NEXT_TELEMETRY_DISABLED=1
+
 COPY package*.json ./
 RUN npm ci
 
-COPY tsconfig.json ./
-COPY src ./src
+COPY . .
 
 RUN npm run build
 
@@ -15,16 +16,16 @@ RUN npm run build
 FROM node:22-alpine AS runner
 
 ENV NODE_ENV=production
+ENV PORT=8080
+ENV HOSTNAME=0.0.0.0
+ENV NEXT_TELEMETRY_DISABLED=1
 
 WORKDIR /app
 
-COPY package*.json ./
-RUN npm ci --omit=dev
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
 
-# Copia os artefatos compilados
-COPY --from=builder /app/dist ./dist
-
-# Expõe a porta que o Cloud Run utiliza
 EXPOSE 8080
 
-CMD ["node", "dist/index.js"]
+CMD ["node", "server.js"]
