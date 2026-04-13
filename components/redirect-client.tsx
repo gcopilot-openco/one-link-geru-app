@@ -4,16 +4,45 @@ import { useEffect } from "react";
 
 type RedirectClientProps = {
   appUrl: string;
-  store: string;
+  appStore: string;
+  playStore: string;
+  webUrl: string;
   linkName: string;
 };
 
-export default function RedirectClient({ appUrl, store, linkName }: RedirectClientProps) {
+function getMobileContext(userAgent: string): { isMobile: boolean; isiOS: boolean } {
+  const normalized = userAgent.toLowerCase();
+  const isiOS = /iphone|ipad|ipod/.test(normalized);
+  const isAndroid = /android/.test(normalized);
+  const isMobile = /mobile|iphone|ipod|android|ipad|tablet/.test(normalized);
+
+  return {
+    isMobile: isMobile || isiOS || isAndroid,
+    isiOS,
+  };
+}
+
+export default function RedirectClient({
+  appUrl,
+  appStore,
+  playStore,
+  webUrl,
+  linkName,
+}: RedirectClientProps) {
   useEffect(() => {
+    const userAgent = navigator.userAgent ?? "";
+    const { isMobile, isiOS } = getMobileContext(userAgent);
+
+    if (!isMobile) {
+      window.location.replace(webUrl);
+      return;
+    }
+
+    const store = isiOS ? appStore : playStore;
     const timeout = 2000;
     const start = Date.now();
 
-    window.location.href = appUrl;
+    window.location.replace(appUrl);
 
     const fallbackTimer = window.setTimeout(() => {
       if (Date.now() - start < timeout + 100) {
@@ -21,7 +50,7 @@ export default function RedirectClient({ appUrl, store, linkName }: RedirectClie
         if (message) {
           message.textContent = "Redirecionando para a loja...";
         }
-        window.location.href = store;
+        window.location.replace(store);
       }
     }, timeout);
 
@@ -43,7 +72,7 @@ export default function RedirectClient({ appUrl, store, linkName }: RedirectClie
       document.removeEventListener("visibilitychange", onVisibilityChange);
       window.removeEventListener("blur", onBlur);
     };
-  }, [appUrl, store]);
+  }, [appStore, appUrl, playStore, webUrl]);
 
   return (
     <div className="download-page">

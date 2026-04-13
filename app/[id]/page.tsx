@@ -1,6 +1,5 @@
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import RedirectClient from "@/components/redirect-client";
-import { getDeviceInfo } from "@/lib/device";
 import { getLinkById } from "@/lib/links";
 
 export const dynamic = "force-dynamic";
@@ -62,21 +61,18 @@ export default async function LinkRedirectPage({
     notFound();
   }
 
-  const device = await getDeviceInfo();
-
-  console.log(
-    `[${new Date().toISOString()}] ${id} (${link.type}) - ${device.isMobile ? "Mobile" : "Desktop"} - ${device.platform}`
-  );
-
   const webUrlWithParams = appendMissingQueryParams(link.webUrl, incomingParams);
   const appUrlWithParams = appendMissingQueryParams(link.appUrl, incomingParams);
+  const appStoreWithParams = appendMissingQueryParams(link.appStore, incomingParams);
+  const playStoreWithParams = appendMissingQueryParams(link.playStore, incomingParams);
 
-  if (!device.isMobile) {
-    redirect(webUrlWithParams);
-  }
-
-  const store = device.isiOS ? link.appStore : link.playStore;
-  const storeWithParams = appendMissingQueryParams(store, incomingParams);
-
-  return <RedirectClient appUrl={appUrlWithParams} store={storeWithParams} linkName={link.name} />;
+  return (
+    <RedirectClient
+      appUrl={appUrlWithParams}
+      appStore={appStoreWithParams}
+      playStore={playStoreWithParams}
+      webUrl={webUrlWithParams}
+      linkName={link.name}
+    />
+  );
 }
