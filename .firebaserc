@@ -1,0 +1,14 @@
+{
+  "projects": {
+    "default": "geru-app-dev"
+  },
+  "targets": {
+    "geru-app-dev": {
+      "hosting": {
+        "one-link-app": [
+          "one-link-app"
+        ]
+      }
+    }
+  }
+}
