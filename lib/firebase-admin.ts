@@ -1,6 +1,7 @@
 import "server-only";
 import { App, cert, getApps, initializeApp } from "firebase-admin/app";
 import { Firestore, getFirestore } from "firebase-admin/firestore";
+import { getStorage } from "firebase-admin/storage";
 
 let firestoreInstance: Firestore | null = null;
 
@@ -34,6 +35,10 @@ function bootstrapFirebase(): App {
   return initializeApp();
 }
 
+export function getFirebaseApp(): App {
+  return bootstrapFirebase();
+}
+
 export function getDb(): Firestore {
   if (firestoreInstance) {
     return firestoreInstance;
@@ -42,4 +47,13 @@ export function getDb(): Firestore {
   const app = bootstrapFirebase();
   firestoreInstance = getFirestore(app);
   return firestoreInstance;
+}
+
+export function getStorageBucket(name?: string) {
+  const app = bootstrapFirebase();
+  const bucketName =
+    name ??
+    process.env.FIREBASE_STORAGE_BUCKET ??
+    `${process.env.FIREBASE_PROJECT_ID}.appspot.com`;
+  return getStorage(app).bucket(bucketName);
 }
