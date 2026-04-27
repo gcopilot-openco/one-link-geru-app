@@ -13,8 +13,8 @@ admin.initializeApp({ projectId });
 const db = admin.firestore();
 
 const links: Record<string, admin.firestore.DocumentData> = {
-  geru: {
-    name: "Geru",
+  download: {
+    name: "download",
     type: "app",
     appUrl: "geru://app",
     webUrl: "https://geru.com.br",
@@ -22,6 +22,17 @@ const links: Record<string, admin.firestore.DocumentData> = {
     playStore: "https://play.google.com/store/apps/details?id=br.com.geru",
     packageName: "br.com.geru",
     bundleId: "br.com.geru",
+  },
+
+  gerushop: {
+    active: true,
+    appStore: "https://apps.apple.com/br/app/geru/id1449866201",
+    appUrl: "geru://product/geru-shop/webview",
+    playStore:
+      "https://play.google.com/store/apps/details?id=com.geru.app&hl=pt_BR&gl=BR",
+    slug: "gerushop",
+    type: "app",
+    webUrl: "https://geru.com.br",
   },
   whatsapp: {
     name: "Geru WhatsApp",
