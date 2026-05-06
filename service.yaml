@@ -8,12 +8,12 @@ spec:
   template:
     metadata:
       annotations:
-        # Escala até zero quando sem tráfego (reduz custos)
-        autoscaling.knative.dev/minScale: "0"
+        # Mantém 1 instância quente para evitar cold start (~2-6s) em redirects
+        autoscaling.knative.dev/minScale: "1"
         autoscaling.knative.dev/maxScale: "10"
         # Número máximo de requisições simultâneas por instância
         autoscaling.knative.dev/target: "80"
-        run.googleapis.com/cpu-throttling: "true"
+        run.googleapis.com/cpu-throttling: "false"
     spec:
       containerConcurrency: 80
       timeoutSeconds: 30
