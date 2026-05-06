@@ -1,7 +1,6 @@
-import { notFound } from "next/navigation";
-import RedirectClient from "@/components/redirect-client";
-
-export const dynamic = "force-dynamic";
+import { notFound, redirect } from "next/navigation";
+import RedirectClient, { buildRedirectScript } from "@/components/redirect-client";
+import { getDeviceInfo } from "@/lib/device";
 
 /**
  * Rota catch-all de deeplinks internos do Geru App.
@@ -14,10 +13,9 @@ export const dynamic = "force-dynamic";
  *   /d/product/geru-pay           → geru://app/product/geru-pay
  *   /d/personal-loan/simulation   → geru://app/personal-loan/simulation
  *
- * Fluxo:
- *   - Mobile iOS     → tenta abrir geru://app/{path}; fallback para App Store
- *   - Mobile Android → tenta abrir geru://app/{path}; fallback para Play Store
- *   - Desktop        → redireciona para geru.com.br
+ * Otimizações de velocidade:
+ *   - Desktop recebe HTTP 302 imediato (sem renderizar nada)
+ *   - Mobile recebe script inline que inicia o redirect ANTES da hidratação React
  */
 
 /** URLs fixas do app Geru — independentes do link configurado no Firestore */
@@ -59,8 +57,11 @@ export default async function DeeplinkPage({
   params: Promise<Params>;
   searchParams: Promise<SearchParams>;
 }) {
-  const { path: segments } = await params;
-  const resolvedSearchParams = await searchParams;
+  const [{ path: segments }, resolvedSearchParams, device] = await Promise.all([
+    params,
+    searchParams,
+    getDeviceInfo(),
+  ]);
 
   if (!segments || segments.length === 0) {
     notFound();
@@ -76,20 +77,41 @@ export default async function DeeplinkPage({
   const qs = buildQueryString(resolvedSearchParams);
 
   // Monta o deep link: geru://app/{path}?{qs}
-  const appUrl = appendQueryString(`geru://app/${deepPath}`, qs);
-
-  // Loja + web sempre apontam para o app Geru genérico
+  const appUrl   = appendQueryString(`geru://app/${deepPath}`, qs);
   const appStore = appendQueryString(GERU_APP_STORE, qs);
-  const playStore = appendQueryString(GERU_PLAY_STORE, qs);
-  const webUrl = appendQueryString(GERU_WEB_URL, qs);
+  const playStore= appendQueryString(GERU_PLAY_STORE, qs);
+  const webUrl   = appendQueryString(GERU_WEB_URL, qs);
+
+  // Desktop: redirect HTTP 302 imediato — sem renderizar nada, sem JS no cliente
+  if (!device.isMobile) {
+    redirect(webUrl);
+  }
+
+  // Mobile: emite script inline que executa ANTES da hidratação React
+  const inlineScript = buildRedirectScript({
+    appUrl,
+    appStore,
+    playStore,
+    webUrl,
+    isMobile: device.isMobile,
+    isiOS:    device.isiOS,
+  });
+
+  const metaRefreshUrl = device.isiOS ? appStore : playStore;
 
   return (
-    <RedirectClient
-      appUrl={appUrl}
-      appStore={appStore}
-      playStore={playStore}
-      webUrl={webUrl}
-      linkName="Geru App"
-    />
+    <>
+      <meta httpEquiv="refresh" content={`3; url=${metaRefreshUrl}`} />
+      <script dangerouslySetInnerHTML={{ __html: inlineScript }} />
+      <RedirectClient
+        appUrl={appUrl}
+        appStore={appStore}
+        playStore={playStore}
+        webUrl={webUrl}
+        linkName="Geru App"
+        isMobile={device.isMobile}
+        isiOS={device.isiOS}
+      />
+    </>
   );
 }

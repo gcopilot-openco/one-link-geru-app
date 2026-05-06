@@ -1,8 +1,7 @@
-import { notFound } from "next/navigation";
-import RedirectClient from "@/components/redirect-client";
+import { notFound, redirect } from "next/navigation";
+import RedirectClient, { buildRedirectScript } from "@/components/redirect-client";
 import { getLinkById } from "@/lib/links";
-
-export const dynamic = "force-dynamic";
+import { getDeviceInfo } from "@/lib/device";
 
 type Params = {
   id: string;
@@ -52,8 +51,12 @@ export default async function LinkRedirectPage({
   params: Promise<Params>;
   searchParams: Promise<SearchParams>;
 }) {
-  const { id } = await params;
-  const resolvedSearchParams = await searchParams;
+  const [{ id }, resolvedSearchParams, device] = await Promise.all([
+    params,
+    searchParams,
+    getDeviceInfo(),
+  ]);
+
   const incomingParams = normalizeSearchParams(resolvedSearchParams);
   const link = await getLinkById(id);
 
@@ -61,18 +64,49 @@ export default async function LinkRedirectPage({
     notFound();
   }
 
-  const webUrlWithParams = appendMissingQueryParams(link.webUrl, incomingParams);
-  const appUrlWithParams = appendMissingQueryParams(link.appUrl, incomingParams);
+  const webUrlWithParams   = appendMissingQueryParams(link.webUrl,   incomingParams);
+  const appUrlWithParams   = appendMissingQueryParams(link.appUrl,   incomingParams);
   const appStoreWithParams = appendMissingQueryParams(link.appStore, incomingParams);
-  const playStoreWithParams = appendMissingQueryParams(link.playStore, incomingParams);
+  const playStoreWithParams= appendMissingQueryParams(link.playStore,incomingParams);
+
+  // Desktop: redirect HTTP 302 imediato — sem renderizar nada, sem JS no cliente
+  if (!device.isMobile) {
+    redirect(webUrlWithParams);
+  }
+
+  // Mobile: emite script inline que executa ANTES da hidratação React
+  const inlineScript = buildRedirectScript({
+    appUrl:   appUrlWithParams,
+    appStore: appStoreWithParams,
+    playStore:playStoreWithParams,
+    webUrl:   webUrlWithParams,
+    isMobile: device.isMobile,
+    isiOS:    device.isiOS,
+  });
+
+  // URL de destino para o meta refresh (loja se mobile, web se desktop — mas
+  // desktop nunca chega aqui devido ao redirect() acima)
+  const metaRefreshUrl = device.isiOS ? appStoreWithParams : playStoreWithParams;
 
   return (
-    <RedirectClient
-      appUrl={appUrlWithParams}
-      appStore={appStoreWithParams}
-      playStore={playStoreWithParams}
-      webUrl={webUrlWithParams}
-      linkName={link.name}
-    />
+    <>
+      {/*
+        Meta refresh: safety net para browsers com JS desabilitado ou muito lento.
+        Aponta para a loja após 3s — tempo suficiente para o script inline atuar primeiro.
+        React 19 faz hoist automático de <meta> para o <head>.
+      */}
+      <meta httpEquiv="refresh" content={`3; url=${metaRefreshUrl}`} />
+
+      <script dangerouslySetInnerHTML={{ __html: inlineScript }} />
+      <RedirectClient
+        appUrl={appUrlWithParams}
+        appStore={appStoreWithParams}
+        playStore={playStoreWithParams}
+        webUrl={webUrlWithParams}
+        linkName={link.name}
+        isMobile={device.isMobile}
+        isiOS={device.isiOS}
+      />
+    </>
   );
 }

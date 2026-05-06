@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "OneLink Geru em Next.js para Cloud Run",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
